@@ -1,0 +1,54 @@
+services:
+  virtual-space:
+    image: registry.opendlv.org/community/opendlv-virtual-space:1.0
+    network_mode: "host"
+    command: "--cid=111 --freq=50 --frame-id=0 --x=0.0 --yaw=0.2 --timemod=1.0"
+
+  virtual-motor-kiwid1:
+    image: registry.opendlv.org/community/opendlv-virtual-motor-kiwid1:1.0
+    network_mode: "host"
+    command: "--cid=111 --freq=200 --frame-id=0 --timemod=1.0 --odometry"
+ 
+  virtual-camera:
+    image: registry.opendlv.org/community/opendlv-virtual-camera:1.0-mesa-gallium
+    network_mode: "host"
+    ipc: "host"
+    volumes:
+      - ${PWD}/resource/example_map:/opt/map:ro
+      - /tmp:/tmp
+    devices:
+      - /dev/dri
+    environment:
+      - DISPLAY=${DISPLAY}
+    command: "--cid=111 --name-i420=video0.i420 --name-argb=video0.argb --frame-id=0 --map-path=/opt/map --x=0.0 --z=0.095 --width=1280 --height=720 --fovy=48.8 --freq=7.5"
+
+  virtual-rangefinder-ir-gp2y0a:
+    image: registry.opendlv.org/community/opendlv-virtual-rangefinder-ir-gp2y0a:1.0
+    network_mode: "host"
+    volumes:
+      - ${PWD}/resource/example_map:/opt/map:ro
+    command: "--cid=111 --freq=5 --frame-id=0 --map-path=/opt/map --id=0,1,2,3,4,5 --x=0.0,0.0,0.0,0.0,0.0,0.0 --y=0.0,0.0,0.0,0.0,0.0,0.0 --yaw=0.00,1.05,2.09,3.14,4.19,5.23"
+
+  logic-distance-voltage:
+    image: registry.opendlv.org/community/opendlv-logic-distance-voltage:1.1
+    network_mode: "host"
+    command: "--cid=111 --curve='3.0,0.04;1.6,0.078;1.0,0.13;0.6,0.22;0.3,0.4' --filter=0.1 --id-in=0,1,2,3,4,5"
+
+  virtual-rangefinder-ultrasonic-srf08:
+    image: registry.opendlv.org/community/opendlv-virtual-rangefinder-ultrasonic-srf08:1.0
+    network_mode: "host"
+    volumes:
+      - ${PWD}/resource/example_map:/opt/map:ro
+    command: "--cid=111 --freq=5 --frame-id=0 --map-path=/opt/map --id=6,7 --x=0.0,0.0 --y=0.0,0.0 --yaw=0.0,3.14"
+
+  ui-vehicle:
+    image: registry.opendlv.org/testing/opendlv-ui-vehicle:0.9
+    network_mode: "host"
+    ipc: "host"
+    volumes:
+      - /tmp:/tmp
+    environment:
+      - DISPLAY=${DISPLAY}
+    command: "--cid=111 --port=6088 --name=video0.bgr --width=1280 --height=720"
+
+
