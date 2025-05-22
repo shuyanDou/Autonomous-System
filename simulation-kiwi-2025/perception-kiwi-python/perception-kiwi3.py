@@ -35,7 +35,8 @@ STATES = {
     "APPROACH": 2,
     "STOP": 3,
     "TURN_LEFT":4,
-    "TURN_RIGHT":5
+    "TURN_RIGHT":5,
+    "TURN": 6
 }
 
 current_state = STATES["EXPLORE"]
@@ -177,7 +178,21 @@ while True:
 
     if current_state == STATES["STOP"]:
         pass
+        
+    elif distances["left_front"] < SAFE_DISTANCE + 0.1:
+        if distances["sonic_distance"]<SAFE_DISTANCE:
+            if (distances["right_front"]<SAFE_DISTANCE and
+                distances["left_front"]<SAFE_DISTANCE): 
     
+                current_state = STATES["AVOID"]
+            else :
+                current_state = STATES["TURN_RIGHT"]
+        else:
+            current_state = STATES["EXPLORE"]
+            
+    #elif distances["sonic_distance"]<SAFE_DISTANCE]:
+    #    current_state = STATES["TURN_RIGHT"]
+        
     elif current_state == STATES["APPROACH"]:
         if not target_detected:
             current_state = STATES["EXPLORE"]
@@ -197,17 +212,10 @@ while True:
         #if distances["sonic_distance"] > SAFE_DISTANCE and distances["left_front"]>SAFE_DISTANCE and distances["right_front"]>SAFE_DISTANCE :
             #current_state = STATES["EXPLORE"]
 
-    # elif got_initial_reading and ( 
-    elif (distances["front"]< SAFE_DISTANCE or
-    distances["sonic_distance"] < SAFE_DISTANCE or 
-    distances["right_front"]<SAFE_DISTANCE or 
-    distances["left_front"]<SAFE_DISTANCE): 
-    #abs(distances["right_front"]-distances["left_front"])>0.1:
-    
-        current_state = STATES["AVOID"]
+
             
     else:
-        current_state = STATES["EXPLORE"]
+        current_state = STATES["TURN_LEFT"]
 	
 
     if current_state != STATES["STOP"]:
@@ -215,11 +223,9 @@ while True:
             #left_pedal = 0.1
             #right_pedal = 0.1
             
-            #if (distances["left_front"] > SAFE_DISTANCE + 0.1 and
-            #    distances["left_rear"]>SAFE_DISTANCE + 0.1):
             if distances["left_front"] > SAFE_DISTANCE + 0.1:
                 left_pedal = 0.05
-                right_pedal = 0.15
+                right_pedal = 0.1
             #elif distances["front"] > SAFE_DISTANCE:
             #    left_pedal = 0.1
             #    right_pedal = 0.1
@@ -229,17 +235,20 @@ while True:
             else:
                 left_pedal = 0.1
                 right_pedal = 0.1
+        elif current_state == STATES["TURN_LEFT"]:
+            left_pedal = -0.1
+            right_pedal = 0.1
+            #time.sleep(1)
+            
+        elif current_state == STATES["TURN_RIGHT"]:
+            left_pedal = 0.1
+            right_pedal = -0.1
+            #time.sleep(1)
         
         elif current_state == STATES["AVOID"]:
             left_pedal = 0.1
             right_pedal = -0.1
-
-            #if distances["left_front"] > distances["right_front"]:
-            #    left_pedal = -0.1
-            #    right_pedal = 0.1
-            #else:  #if distances["left_front"] < distances["right_front"]:
-            #    left_pedal = 0.1
-            #    right_pedal = -0.1
+            time.sleep(3)
                 
             
         elif current_state == STATES["APPROACH"]:
